@@ -1,0 +1,91 @@
+name: Build & Release
+
+# Triggered by pushing a v-prefixed tag (e.g. v1.1.0); also runnable manually from the Actions tab
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.1.0); leave empty to use the tag name / VERSION file'
+        required: false
+
+permissions:
+  contents: write   # required to create a Release and upload assets
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install zig   # build.rs uses zig cc to compile the C sources; 0.16 stable matches the local 0.16-dev toolchain
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: "0.16.0"
+
+      - name: Determine version
+        id: ver
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            V="${{ github.event.inputs.version }}"
+          elif [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            V="${GITHUB_REF_NAME#v}"
+          else
+            V="$(tr -d '[:space:]' < VERSION)"
+          fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Stage portable exe      # installer.nsi expects File "dist\mdview.exe"
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp target/release/mdview.exe dist/mdview.exe
+
+      - name: Install NSIS       # windows-latest no longer ships makensis on PATH
+        shell: pwsh
+        run: |
+          choco install nsis -y --no-progress
+          & 'C:\Program Files (x86)\NSIS\makensis.exe' /VERSION
+
+      - name: Build NSIS installer
+        shell: bash
+        env:
+          MSYS_NO_PATHCONV: 1   # stop Git Bash mangling /D... into C:/Program Files/Git/D...
+        run: |
+          "/c/Program Files (x86)/NSIS/makensis.exe" /DPRODUCT_VERSION=${{ steps.ver.outputs.version }} /DOUT_DIR=dist installer.nsi
+
+      - name: Pack portable zip
+        shell: bash
+        run: 7z a "mdview-${{ steps.ver.outputs.version }}-portable.zip" ./dist/mdview.exe
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          sha256sum "mdview-${{ steps.ver.outputs.version }}-portable.zip" \
+                    "dist/mdview-setup-${{ steps.ver.outputs.version }}.exe" > sha256sums.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: mdview ${{ steps.ver.outputs.version }}
+          files: |
+            mdview-${{ steps.ver.outputs.version }}-portable.zip
+            dist/mdview-setup-${{ steps.ver.outputs.version }}.exe
+            sha256sums.txt
+          body: |
+            mdview ${{ steps.ver.outputs.version }}
+
+            - `mdview-*-portable.zip` — portable build, unzip and run
+            - `mdview-setup-*.exe` — Windows installer

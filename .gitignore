@@ -1,0 +1,28 @@
+# Rust build artifacts
+/target
+debug
+*.pdb
+
+# rustfmt backups
+**/*.rs.bk
+
+# cargo mutants
+**/mutants.out*/
+
+# Build artifacts and temporary files
+dist/
+tmp/
+upx/
+*.zip
+*.exe
+mdview.exe.WebView2/
+installer.nsi.tmp
+
+# IDE / editors
+.idea/
+.vscode/
+.*nul
+
+# Local debugging scratch files
+test_reg.rs
+test_serde.rs

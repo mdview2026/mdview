@@ -1,0 +1,40 @@
+[package]
+name = "mdview"
+# The actual release version is governed by the VERSION file in the repo root (build.rs reads it and injects the compile-time APP_VERSION).
+# This version field is cargo metadata only — it does not drive version naming and is not synced automatically; do not use it to judge the released version.
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+axum = { version = "0.7", features = ["tokio"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["fs", "cors"] }
+notify = "6.1"
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+regex-lite = "0.1"
+chrono = "0.4"
+async-stream = "0.3"
+futures = "0.3"
+dunce = "1.0"
+winreg = "0.52"
+windows-sys = { version = "0.52", features = ["Win32_Foundation", "Win32_System_Console", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls_Dialogs"] }
+wry = "0.55.0"
+tao = "0.35.0"
+image = "0.24"
+
+[build-dependencies]
+winres = "0.1.12"
+
+[[bin]]
+name = "mdview"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
