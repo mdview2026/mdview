@@ -2,6 +2,8 @@
 
 A lightweight Windows Markdown live-preview tool, built with Rust + WebView2.
 
+🌐 **Official website**: [https://www.mdview.top](https://www.mdview.top)
+
 ![icon](static/logo_big.png)
 
 ## Features
@@ -17,7 +19,7 @@ A lightweight Windows Markdown live-preview tool, built with Rust + WebView2.
 
 ## Quick start
 
-1. Grab `mdview.exe` and drop it anywhere
+1. Download `mdview.exe` from [mdview.top](https://www.mdview.top) and drop it anywhere
 2. **Double-click it** — it registers itself as the default `.md` handler
 3. **Double-click any `.md` file** to preview it
 
