@@ -207,7 +207,14 @@ fn show_welcome_window() -> Result<()> {
                         .spawn();
                 }
                 #[cfg(not(windows))]
-                let _ = std::process::Command::new("xdg-open").arg(&url).spawn();
+                {
+                    // macOS uses `open`; Linux/BSD use `xdg-open`.
+                    #[cfg(target_os = "macos")]
+                    let opener = "open";
+                    #[cfg(not(target_os = "macos"))]
+                    let opener = "xdg-open";
+                    let _ = std::process::Command::new(opener).arg(&url).spawn();
+                }
                 return;
             }
             if body.contains("settings") {
@@ -603,7 +610,14 @@ fn main() -> Result<()> {
                         .spawn();
                 }
                 #[cfg(not(windows))]
-                let _ = std::process::Command::new("xdg-open").arg(&url).spawn();
+                {
+                    // macOS uses `open`; Linux/BSD use `xdg-open`.
+                    #[cfg(target_os = "macos")]
+                    let opener = "open";
+                    #[cfg(not(target_os = "macos"))]
+                    let opener = "xdg-open";
+                    let _ = std::process::Command::new(opener).arg(&url).spawn();
+                }
                 return;
             }
             if body == "browse:editor" {

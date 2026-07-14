@@ -36,7 +36,10 @@ fn compile_md4x() {
     let libyaml_include = std::path::Path::new(&manifest_dir).join("csrc/libyaml/include");
     let libyaml_src_dir = std::path::Path::new(&manifest_dir).join("csrc/libyaml/src");
 
-    let target = "x86_64-windows-msvc";
+    // Derive the zig target from the cargo target triple (e.g. x86_64-pc-windows-msvc,
+    // x86_64-unknown-linux-gnu, aarch64-apple-darwin). build.rs runs once per --target.
+    let cargo_target = std::env::var("TARGET").expect("cargo TARGET not set");
+    let target = zig_target(&cargo_target);
 
     // List of C source files
     // All files need YAML_DECLARE_STATIC, because md4x-html.c includes yaml.h
@@ -49,10 +52,13 @@ fn compile_md4x() {
         r#"-DYAML_VERSION_STRING="0.2.5""#,
     ];
 
-    // libyaml internal compilation needs POSIX compatibility (MSVC lacks strdup/snprintf)
+    // libyaml internal compilation: MSVC lacks strdup, so alias it to _strdup on MSVC only.
+    // glibc/darwin already provide strdup natively, and _strdup does not exist there.
     let yaml_internal_defines = {
         let mut v = yaml_common_defines.clone();
-        v.push("-Dstrdup=_strdup");
+        if target.contains("msvc") {
+            v.push("-Dstrdup=_strdup");
+        }
         v
     };
 
@@ -113,8 +119,10 @@ fn compile_md4x() {
         obj_files.push(obj);
     }
 
-    // Create the static library using zig ar
-    let lib_path = std::path::Path::new(&out_dir).join("md4x.lib");
+    // Create the static library using zig ar.
+    // MSVC's link searches for md4x.lib; every other linker (gnu/darwin) searches for libmd4x.a.
+    let lib_name = if target.contains("msvc") { "md4x.lib" } else { "libmd4x.a" };
+    let lib_path = std::path::Path::new(&out_dir).join(lib_name);
     let mut ar_args: Vec<String> = vec![
         "ar".to_string(),
         "rcs".to_string(),
@@ -140,6 +148,24 @@ fn compile_md4x() {
     // Tell cargo to rebuild when these files change
     println!("cargo:rerun-if-changed=csrc/md4x");
     println!("cargo:rerun-if-changed=csrc/libyaml");
+}
+
+/// Map a cargo target triple to a zig target spec.
+///
+/// Cargo passes its target triple via the `TARGET` env var (e.g.
+/// `x86_64-pc-windows-msvc`, `x86_64-unknown-linux-gnu`, `aarch64-apple-darwin`).
+/// zig expects the normalized form: no vendor field, and the `macos` os name
+/// (rather than `darwin`). Unknown triples pass through unchanged so zig can validate.
+fn zig_target(cargo_target: &str) -> String {
+    let parts: Vec<&str> = cargo_target.split('-').collect();
+    let arch = parts.first().copied().unwrap_or("");
+    let os = parts.get(2).copied();
+    match os {
+        Some("darwin") => format!("{}-macos", arch),
+        Some("windows") => format!("{}-windows-{}", arch, parts.get(3).copied().unwrap_or("msvc")),
+        Some("linux") => format!("{}-linux-{}", arch, parts.get(3).copied().unwrap_or("gnu")),
+        _ => cargo_target.to_string(),
+    }
 }
 
 /// Find the zig executable

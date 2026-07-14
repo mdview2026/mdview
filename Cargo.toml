@@ -19,13 +19,16 @@ chrono = "0.4"
 async-stream = "0.3"
 futures = "0.3"
 dunce = "1.0"
-winreg = "0.52"
-windows-sys = { version = "0.52", features = ["Win32_Foundation", "Win32_System_Console", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls_Dialogs"] }
 wry = "0.55.0"
 tao = "0.35.0"
 image = "0.24"
 
-[build-dependencies]
+# Windows-only crates; only compiled on the windows target so Linux/macOS builds cleanly.
+[target.'cfg(windows)'.dependencies]
+winreg = "0.52"
+windows-sys = { version = "0.52", features = ["Win32_Foundation", "Win32_System_Console", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls_Dialogs"] }
+
+[target.'cfg(windows)'.build-dependencies]
 winres = "0.1.12"
 
 [[bin]]

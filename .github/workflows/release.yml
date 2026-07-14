@@ -14,22 +14,13 @@ permissions:
   contents: write   # required to create a Release and upload assets
 
 jobs:
-  build:
-    runs-on: windows-latest
+  # ── Resolve the version once so the build matrix and release job can't drift ──
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
-      - name: Install zig   # build.rs uses zig cc to compile the C sources; 0.16 stable matches the local 0.16-dev toolchain
-        uses: goto-bus-stop/setup-zig@v2
-        with:
-          version: "0.16.0"
-
       - name: Determine version
         id: ver
         shell: bash
@@ -42,50 +33,193 @@ jobs:
             V="$(tr -d '[:space:]' < VERSION)"
           fi
           echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: $V"
 
+  # ── Build on Windows, Linux and macOS ──
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-14
+            platform: macos
+    runs-on: ${{ matrix.os }}
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add macOS targets (universal build)
+        if: matrix.platform == 'macos'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install zig   # build.rs uses zig cc to compile the C sources; 0.16 stable matches the local 0.16-dev toolchain
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: "0.16.0"
+
+      - name: Install Linux system dependencies (WebKitGTK backend for wry)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      # ── Windows & Linux: single native build ──
       - name: Build release binary
+        if: matrix.platform != 'macos'
         run: cargo build --release
 
+      # ── Windows packaging ──
       - name: Stage portable exe      # installer.nsi expects File "dist\mdview.exe"
+        if: matrix.platform == 'windows'
         shell: bash
         run: |
           mkdir -p dist
           cp target/release/mdview.exe dist/mdview.exe
 
       - name: Install NSIS       # windows-latest no longer ships makensis on PATH
+        if: matrix.platform == 'windows'
         shell: pwsh
         run: |
           choco install nsis -y --no-progress
           & 'C:\Program Files (x86)\NSIS\makensis.exe' /VERSION
 
       - name: Build NSIS installer
+        if: matrix.platform == 'windows'
         shell: bash
         env:
           MSYS_NO_PATHCONV: 1   # stop Git Bash mangling /D... into C:/Program Files/Git/D...
         run: |
-          "/c/Program Files (x86)/NSIS/makensis.exe" /DPRODUCT_VERSION=${{ steps.ver.outputs.version }} /DOUT_DIR=dist installer.nsi
+          "/c/Program Files (x86)/NSIS/makensis.exe" /DPRODUCT_VERSION=${VERSION} /DOUT_DIR=dist installer.nsi
 
-      - name: Pack portable zip
+      - name: Pack portable zip (Windows)
+        if: matrix.platform == 'windows'
         shell: bash
-        run: 7z a "mdview-${{ steps.ver.outputs.version }}-portable.zip" ./dist/mdview.exe
+        run: 7z a "mdview-${VERSION}-portable.zip" ./dist/mdview.exe
+
+      # ── Linux packaging ──
+      - name: Pack Linux tarball
+        if: matrix.platform == 'linux'
+        run: |
+          mkdir -p dist
+          cp target/release/mdview dist/mdview
+          tar -C dist -czf "mdview-${VERSION}-linux-x86_64.tar.gz" mdview
+
+      # ── macOS: universal binary (Intel + Apple Silicon) packaged as a .app bundle ──
+      - name: Build universal binary
+        if: matrix.platform == 'macos'
+        run: |
+          mkdir -p dist
+          cargo build --release --target aarch64-apple-darwin
+          cargo build --release --target x86_64-apple-darwin
+          lipo -create \
+            -output dist/mdview \
+            target/aarch64-apple-darwin/release/mdview \
+            target/x86_64-apple-darwin/release/mdview
+          # Sanity check: the binary must contain both arches
+          lipo -archs dist/mdview
+
+      - name: Assemble .app bundle
+        if: matrix.platform == 'macos'
+        run: |
+          APP="dist/mdview.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          cp dist/mdview "$APP/Contents/MacOS/mdview"
+          cat > "$APP/Contents/Info.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleName</key><string>mdview</string>
+            <key>CFBundleDisplayName</key><string>mdview</string>
+            <key>CFBundleIdentifier</key><string>top.mdview.app</string>
+            <key>CFBundleVersion</key><string>${VERSION}</string>
+            <key>CFBundleShortVersionString</key><string>${VERSION}</string>
+            <key>CFBundleExecutable</key><string>mdview</string>
+            <key>CFBundlePackageType</key><string>APPL</string>
+            <key>LSMinimumSystemVersion</key><string>10.15</string>
+            <key>NSHighResolutionCapable</key><true/>
+            <key>CFBundleIconFile</key><string>icon.icns</string>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Generate app icon (best-effort)
+        if: matrix.platform == 'macos'
+        continue-on-error: true
+        run: |
+          APP="dist/mdview.app"
+          ICONSET="$(mktemp -d)/icon.iconset"
+          mkdir -p "$ICONSET"
+          for s in 16 32 64 128 256 512; do
+            sips -z $s $s static/logo_big.png --out "$ICONSET/icon_${s}x${s}.png" >/dev/null 2>&1 || true
+          done
+          for s in 32 64 256 512; do
+            h=$((s/2))
+            sips -z $h $h static/logo_big.png --out "$ICONSET/icon_${s}x${s}@2x.png" >/dev/null 2>&1 || true
+          done
+          iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/icon.icns" >/dev/null 2>&1 || true
+
+      - name: Pack macOS tarball
+        if: matrix.platform == 'macos'
+        run: tar -C dist -czf "mdview-${VERSION}-macos-universal.tar.gz" mdview.app
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.platform }}
+          if-no-files-found: error
+          path: |
+            mdview-*.zip
+            mdview-*.tar.gz
+            dist/mdview-setup-*.exe
+
+  # ── One release holding all platform artifacts + checksums ──
+  release:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Stage release files
+        run: |
+          mkdir -p release
+          find artifacts -type f \
+            \( -name 'mdview-*.zip' -o -name 'mdview-*.tar.gz' -o -name 'mdview-setup-*.exe' \) \
+            -exec cp {} release/ \;
+          ls -l release/
 
       - name: Generate checksums
-        shell: bash
         run: |
-          sha256sum "mdview-${{ steps.ver.outputs.version }}-portable.zip" \
-                    "dist/mdview-setup-${{ steps.ver.outputs.version }}.exe" > sha256sums.txt
+          cd release
+          sha256sum * > sha256sums.txt
+          cat sha256sums.txt
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.ver.outputs.version }}
-          name: mdview ${{ steps.ver.outputs.version }}
+          tag_name: v${{ needs.prepare.outputs.version }}
+          name: mdview ${{ needs.prepare.outputs.version }}
           files: |
-            mdview-${{ steps.ver.outputs.version }}-portable.zip
-            dist/mdview-setup-${{ steps.ver.outputs.version }}.exe
-            sha256sums.txt
+            release/*
           body: |
-            mdview ${{ steps.ver.outputs.version }}
+            mdview ${{ needs.prepare.outputs.version }}
 
-            - `mdview-*-portable.zip` — portable build, unzip and run
+            - `mdview-*-portable.zip` — Windows portable build, unzip and run
             - `mdview-setup-*.exe` — Windows installer
+            - `mdview-*-linux-x86_64.tar.gz` — Linux build (requires WebKitGTK)
+            - `mdview-*-macos-universal.tar.gz` — macOS app bundle (Intel + Apple Silicon), unsigned

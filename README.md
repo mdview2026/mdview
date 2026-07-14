@@ -1,6 +1,6 @@
 # mdview
 
-A lightweight Windows Markdown live-preview tool, built with Rust + WebView2.
+A lightweight Markdown live-preview tool for Windows, Linux and macOS, built with Rust (Windows: WebView2 · Linux: WebKitGTK · macOS: WKWebView).
 
 🌐 **Official website**: [https://www.mdview.top](https://www.mdview.top)
 
@@ -79,13 +79,21 @@ mdview --help              Show help
 
 ## Building
 
-Requires Rust (MSVC toolchain) and [zig](https://ziglang.org/): `build.rs` uses zig to compile the md4x / libyaml C sources under `csrc/` into a static library (zig must be on PATH, or at `D:\zig\` / `C:\zig\`).
+Pre-built binaries for Windows, Linux and macOS are produced by the [Build & Release](.github/workflows/release.yml) workflow on every tagged release.
+
+To build locally you need Rust and [zig](https://ziglang.org/). `build.rs` invokes zig to compile the md4x / libyaml C sources under `csrc/` into a static library (zig must be on PATH, or at `D:\zig\` / `C:\zig\`).
 
 ```bash
 cargo build --release
 ```
 
-The binary is at `target/release/mdview.exe`.
+Per-platform extras:
+
+- **Windows** — Rust MSVC toolchain. Binary: `target/release/mdview.exe`.
+- **Linux** — WebKitGTK dev headers: `sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev build-essential libssl-dev`. Binary: `target/release/mdview`.
+- **macOS** — Xcode Command Line Tools (WKWebView is system-provided). For a universal binary, build both targets and combine them with `lipo -create target/{aarch64,x86_64}-apple-darwin/release/mdview -output mdview`. Binary: `target/release/mdview`.
+
+> File-association and the right-click "Open with mdview" commands (`--install`, `--unbind`, …) are Windows-only; on Linux/macOS they print a message and exit.
 
 ## Project layout
 
