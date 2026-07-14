@@ -24,7 +24,9 @@ use axum::{routing::get, Router};
 use tower_http::cors::CorsLayer;
 use notify::Watcher;
 use crate::server::{get_available_port, static_router, welcome_page_handler, welcome_action_handler, settings_page_handler, settings_status_handler, settings_action_handler, AppState, build_preview_router};
-use crate::registry::{install_context_menu, uninstall_context_menu, remove_as_default_handler, set_as_default_handler};
+use crate::registry::set_as_default_handler;
+#[cfg(windows)]
+use crate::registry::{install_context_menu, uninstall_context_menu, remove_as_default_handler};
 use crate::watcher::{FileChange, watch_handler, update};
 use crate::config::{load_config, save_config, add_recent_file, get_webview_data_directory};
 
@@ -589,7 +591,6 @@ fn main() -> Result<()> {
     let mut web_context = WebContext::new(Some(get_webview_data_directory()));
     let mut webview_builder = WebViewBuilder::new_with_web_context(&mut web_context)
         .with_url(&url)
-        .with_default_context_menus(false)
         .with_ipc_handler(move |msg| {
             let body = msg.into_body();
             if body.starts_with("open:") {
@@ -640,7 +641,10 @@ fn main() -> Result<()> {
         });
     #[cfg(windows)]
     {
-        webview_builder = webview_builder.with_additional_browser_args(format!("--lang={}", i18n::current_lang().webview2_language()));
+        // Disable the native WebView2 context menu; the preview provides its own via JS.
+        webview_builder = webview_builder
+            .with_default_context_menus(false)
+            .with_additional_browser_args(format!("--lang={}", i18n::current_lang().webview2_language()));
     }
     let _webview = webview_builder.build(&window)?;
 

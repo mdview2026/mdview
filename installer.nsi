@@ -5,6 +5,12 @@
 !define PRODUCT_VERSION "0.1.0"
 !endif
 
+; Numeric X.X.X.X version for the version-info resource (NSIS rejects pre-release
+; suffixes). Falls back to PRODUCT_VERSION padded with a trailing .0 when not passed.
+!ifndef VI_VERSION
+!define VI_VERSION "${PRODUCT_VERSION}.0"
+!endif
+
 !define PRODUCT_NAME "mdview"
 !define PRODUCT_PUBLISHER "mdview"
 
@@ -46,7 +52,7 @@ RequestExecutionLevel admin
 
 !insertmacro MUI_LANGUAGE "English"
 
-VIProductVersion "${PRODUCT_VERSION}.0"
+VIProductVersion "${VI_VERSION}"
 VIAddVersionKey "ProductName" "${PRODUCT_NAME}${PRODUCT_EDITION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"

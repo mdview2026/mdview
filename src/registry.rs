@@ -1,6 +1,9 @@
+#[cfg(windows)]
 use crate::config::{load_config, save_config, get_md_backup};
 use crate::i18n;
-use anyhow::{Context, Result};
+use anyhow::Result;
+#[cfg(windows)]
+use anyhow::Context;
 
 #[cfg(windows)]
 use winreg::{enums::*, RegKey};

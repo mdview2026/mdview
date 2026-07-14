@@ -101,7 +101,11 @@ jobs:
         env:
           MSYS_NO_PATHCONV: 1   # stop Git Bash mangling /D... into C:/Program Files/Git/D...
         run: |
-          "/c/Program Files (x86)/NSIS/makensis.exe" /DPRODUCT_VERSION=${VERSION} /DOUT_DIR=dist installer.nsi
+          # NSIS's VIProductVersion requires a strict X.X.X.X numeric version. Strip any
+          # pre-release suffix and pad to 4 components (e.g. 1.1.0-test.1 -> 1.1.0.0).
+          VI_VER=$(echo "${VERSION%%-*}" | awk -F. '{printf "%s.%s.%s.%s", $1+0,$2+0,$3+0,$4+0}')
+          echo "VI version: $VI_VER (from $VERSION)"
+          "/c/Program Files (x86)/NSIS/makensis.exe" /DPRODUCT_VERSION=${VERSION} /DVI_VERSION=${VI_VER} /DOUT_DIR=dist installer.nsi
 
       - name: Pack portable zip (Windows)
         if: matrix.platform == 'windows'
