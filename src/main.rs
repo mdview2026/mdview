@@ -172,10 +172,10 @@ fn show_welcome_window() -> Result<()> {
         .with_title(i18n::tr("title_main"))
         .with_inner_size(tao::dpi::LogicalSize::new(560, 550))
         .with_resizable(false)
-        .with_visible(false)
         .build(&event_loop)?;
 
-    // Center the window
+    // Center the window. (The window is created already-visible rather than hidden-then-shown:
+    // on Linux/GTK a hidden window is never realized, so the WebView can't obtain its handle.)
     if let Some(monitor) = window.current_monitor() {
         let monitor_size = monitor.size();
         let window_size = window.outer_size();
@@ -183,7 +183,6 @@ fn show_welcome_window() -> Result<()> {
         let y = (monitor_size.height.saturating_sub(window_size.height)) / 2;
         window.set_outer_position(tao::dpi::PhysicalPosition::new(x as i32, y as i32));
     }
-    window.set_visible(true);
 
     let mut web_context = WebContext::new(Some(get_webview_data_directory()));
     let mut webview_builder = WebViewBuilder::new_with_web_context(&mut web_context)

@@ -19,8 +19,8 @@ chrono = "0.4"
 async-stream = "0.3"
 futures = "0.3"
 dunce = "1.0"
-wry = "0.55.0"
-tao = "0.35.0"
+wry = "0.55.1"
+tao = "0.35.3"
 image = "0.24"
 
 # Windows-only crates; only compiled on the windows target so Linux/macOS builds cleanly.
