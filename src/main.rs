@@ -58,6 +58,51 @@ fn hide_console_window() {
 #[cfg(not(windows))]
 fn hide_console_window() {}
 
+/// Build the WebView for the given window.
+///
+/// On Linux/*BSD we must NOT use `WebViewBuilder::build(&window)`: wry's X11
+/// path wraps the tao X window as a foreign GdkWindow, which renders a blank
+/// white page (the page loads — network and JS run — but nothing is painted).
+/// Embedding the WebKitGTK webview into tao's own GTK widget tree via
+/// `WebViewBuilderExtUnix::build_gtk` renders correctly on both X11 and Wayland.
+/// On Windows (WebView2) and macOS (WKWebView) the raw-handle `build` path is
+/// the correct one and is kept unchanged.
+/// (The cfg target list mirrors wry's own gating of `WebViewBuilderExtUnix`.)
+#[cfg(any(
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "netbsd",
+    target_os = "openbsd"
+))]
+fn build_webview_for_window(
+    builder: wry::WebViewBuilder<'_>,
+    window: &tao::window::Window,
+) -> Result<wry::WebView> {
+    use tao::platform::unix::WindowExtUnix;
+    use wry::WebViewBuilderExtUnix;
+
+    let vbox = window
+        .default_vbox()
+        .expect("tao window has no default vbox")
+        .clone();
+    Ok(builder.build_gtk(&vbox)?)
+}
+
+#[cfg(not(any(
+    target_os = "linux",
+    target_os = "dragonfly",
+    target_os = "freebsd",
+    target_os = "netbsd",
+    target_os = "openbsd"
+)))]
+fn build_webview_for_window(
+    builder: wry::WebViewBuilder<'_>,
+    window: &tao::window::Window,
+) -> Result<wry::WebView> {
+    Ok(builder.build(window)?)
+}
+
 /// Show a file picker dialog for the user to select an .exe file (Windows only)
 #[cfg(windows)]
 fn pick_exe_file() -> Option<String> {
@@ -219,7 +264,7 @@ fn show_welcome_window() -> Result<()> {
     {
         webview_builder = webview_builder.with_additional_browser_args(format!("--lang={}", i18n::current_lang().webview2_language()));
     }
-    let _webview = webview_builder.build(&window)?;
+    let _webview = build_webview_for_window(webview_builder, &window)?;
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -283,7 +328,7 @@ fn show_settings_window() -> Result<()> {
     {
         webview_builder = webview_builder.with_additional_browser_args(format!("--lang={}", i18n::current_lang().webview2_language()));
     }
-    let _webview = webview_builder.build(&window)?;
+    let _webview = build_webview_for_window(webview_builder, &window)?;
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -582,7 +627,6 @@ fn main() -> Result<()> {
     let mut web_context = WebContext::new(Some(get_webview_data_directory()));
     let mut webview_builder = WebViewBuilder::new_with_web_context(&mut web_context)
         .with_url(&url)
-        .with_default_context_menus(false)
         .with_ipc_handler(move |msg| {
             let body = msg.into_body();
             if body.starts_with("open:") {
@@ -626,9 +670,11 @@ fn main() -> Result<()> {
         });
     #[cfg(windows)]
     {
-        webview_builder = webview_builder.with_additional_browser_args(format!("--lang={}", i18n::current_lang().webview2_language()));
+        webview_builder = webview_builder
+            .with_default_context_menus(false)
+            .with_additional_browser_args(format!("--lang={}", i18n::current_lang().webview2_language()));
     }
-    let _webview = webview_builder.build(&window)?;
+    let _webview = build_webview_for_window(webview_builder, &window)?;
 
     // Run the UI event loop (blocks the main thread until the window closes)
     event_loop.run(move |event, _, control_flow| {

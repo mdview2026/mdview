@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=mdview
+Comment=Markdown live preview
+Exec=mdview %f
+Icon=mdview
+Type=Application
+Terminal=false
+MimeType=text/markdown;text/x-markdown;
+Categories=Utility;TextEditor;

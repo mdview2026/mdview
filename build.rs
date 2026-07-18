@@ -36,7 +36,9 @@ fn compile_md4x() {
     let libyaml_include = std::path::Path::new(&manifest_dir).join("csrc/libyaml/include");
     let libyaml_src_dir = std::path::Path::new(&manifest_dir).join("csrc/libyaml/src");
 
-    let target = "x86_64-windows-msvc";
+    // Use the host target triple so the C objects match the Rust target.
+    let target = rustc_target_to_zig(&rustc_host_target());
+    let is_windows = target.contains("windows");
 
     // List of C source files
     // All files need YAML_DECLARE_STATIC, because md4x-html.c includes yaml.h
@@ -52,7 +54,9 @@ fn compile_md4x() {
     // libyaml internal compilation needs POSIX compatibility (MSVC lacks strdup/snprintf)
     let yaml_internal_defines = {
         let mut v = yaml_common_defines.clone();
-        v.push("-Dstrdup=_strdup");
+        if is_windows {
+            v.push("-Dstrdup=_strdup");
+        }
         v
     };
 
@@ -114,7 +118,8 @@ fn compile_md4x() {
     }
 
     // Create the static library using zig ar
-    let lib_path = std::path::Path::new(&out_dir).join("md4x.lib");
+    let lib_name = if is_windows { "md4x.lib" } else { "libmd4x.a" };
+    let lib_path = std::path::Path::new(&out_dir).join(lib_name);
     let mut ar_args: Vec<String> = vec![
         "ar".to_string(),
         "rcs".to_string(),
@@ -140,6 +145,34 @@ fn compile_md4x() {
     // Tell cargo to rebuild when these files change
     println!("cargo:rerun-if-changed=csrc/md4x");
     println!("cargo:rerun-if-changed=csrc/libyaml");
+}
+
+/// Return the host target triple reported by `rustc -vV`.
+/// This lets the C sources be compiled for the same target as the Rust code.
+fn rustc_host_target() -> String {
+    let output = std::process::Command::new("rustc")
+        .args(["-vV"])
+        .output()
+        .expect("failed to run rustc to determine host target");
+    let stdout = String::from_utf8(output.stdout).expect("rustc output is not UTF-8");
+    for line in stdout.lines() {
+        if let Some(host) = line.strip_prefix("host:") {
+            return host.trim().to_string();
+        }
+    }
+    panic!("could not determine rustc host target from: {}", stdout)
+}
+
+/// Convert a rustc target triple into the format zig expects.
+/// rustc: <arch>-<vendor>-<os>-<abi>   e.g. x86_64-unknown-linux-gnu
+/// zig:   <arch>-<os>-<abi>            e.g. x86_64-linux-gnu
+fn rustc_target_to_zig(target: &str) -> String {
+    let parts: Vec<&str> = target.split('-').collect();
+    match parts.len() {
+        4 => format!("{}-{}-{}", parts[0], parts[2], parts[3]),
+        3 => format!("{}-{}", parts[0], parts[2]),
+        _ => target.to_string(),
+    }
 }
 
 /// Find the zig executable

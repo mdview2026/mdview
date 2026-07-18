@@ -105,3 +105,32 @@ pub fn render_html(input: &str) -> Result<String, String> {
 
     String::from_utf8(output).map_err(|e| i18n::trf("error_md4x_not_utf8", &[&e.to_string()]))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::render_html;
+
+    #[test]
+    fn test_render_ascii() {
+        let input = "# Hello World\n\nThis is a test.\n\n- item 1\n- item 2\n";
+        let html = render_html(input).expect("render_ascii failed");
+        println!("ASCII result: {}", html);
+        assert!(html.contains("<h1>Hello World</h1>"), "expected heading in output");
+    }
+
+    #[test]
+    fn test_render_chinese() {
+        let input = "# 你好世界\n\n这是一个测试。\n";
+        let html = render_html(input).expect("render_chinese failed");
+        println!("Chinese result: {}", html);
+        assert!(html.contains("<h1>"), "expected heading in output");
+    }
+
+    #[test]
+    fn test_render_emoji() {
+        let input = "# Hello 🌐\n\nThis has an emoji.\n";
+        let html = render_html(input).expect("render_emoji failed");
+        println!("Emoji result: {}", html);
+        assert!(html.contains("<h1>"), "expected heading in output");
+    }
+}
