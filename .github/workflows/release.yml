@@ -1,13 +1,14 @@
 name: Build & Release
 
-# Triggered by pushing a v-prefixed tag (e.g. v1.1.0); also runnable manually from the Actions tab
+# Triggered by pushing a v-prefixed tag (e.g. v1.2.0); also runnable manually from the Actions tab.
+# Builds Windows / Linux / macOS in parallel, then collects all artifacts into a single Release.
 on:
   push:
     tags: [ 'v*' ]
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version (e.g. 1.1.0); leave empty to use the tag name / VERSION file'
+        description: 'Version (e.g. 1.2.0); leave empty to use the tag name / VERSION file'
         required: false
 
 permissions:
@@ -15,9 +16,26 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false   # one OS failing must not cancel the others
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libglib2.0-dev \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -46,34 +64,102 @@ jobs:
       - name: Build release binary
         run: cargo build --release
 
-      - name: Stage portable exe      # installer.nsi expects File "dist\mdview.exe"
+      # ---------- Windows: portable zip + NSIS installer ----------
+      # installer.nsi hardcodes `File "dist\mdview.exe"`, so the binary must live at dist/mdview.exe.
+      - name: Stage portable exe (Windows)
+        if: runner.os == 'Windows'
         shell: bash
         run: |
-          mkdir -p dist
+          mkdir -p dist out
           cp target/release/mdview.exe dist/mdview.exe
+          7z a "out/mdview-${{ steps.ver.outputs.version }}-windows-portable.zip" dist/mdview.exe
 
-      - name: Install NSIS       # windows-latest no longer ships makensis on PATH
+      - name: Install NSIS (Windows)
+        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           choco install nsis -y --no-progress
           & 'C:\Program Files (x86)\NSIS\makensis.exe' /VERSION
 
-      - name: Build NSIS installer
+      - name: Build NSIS installer (Windows)
+        if: runner.os == 'Windows'
         shell: bash
         env:
           MSYS_NO_PATHCONV: 1   # stop Git Bash mangling /D... into C:/Program Files/Git/D...
         run: |
-          "/c/Program Files (x86)/NSIS/makensis.exe" /DPRODUCT_VERSION=${{ steps.ver.outputs.version }} /DOUT_DIR=dist installer.nsi
+          "/c/Program Files (x86)/NSIS/makensis.exe" \
+            /DPRODUCT_VERSION=${{ steps.ver.outputs.version }} \
+            /DOUT_DIR=out installer.nsi
 
-      - name: Pack portable zip
+      # ---------- Linux: tarball with binary + desktop integration ----------
+      - name: Pack Linux tarball (Linux)
+        if: runner.os == 'Linux'
         shell: bash
-        run: 7z a "mdview-${{ steps.ver.outputs.version }}-portable.zip" ./dist/mdview.exe
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          ARCH="$(uname -m)"
+          STAGE="out/mdview-${VERSION}-linux-${ARCH}"
+          mkdir -p "$STAGE"
+          cp target/release/mdview "$STAGE/"
+          cp -r static "$STAGE/"
+          cp install-linux-mime.sh "$STAGE/"
+          cp README.md LICENSE "$STAGE/" 2>/dev/null || true
+          tar -C out -czf "$STAGE.tar.gz" "$(basename "$STAGE")"
+
+      # ---------- macOS: tarball with binary ----------
+      - name: Pack macOS tarball (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          ARCH="$(uname -m)"
+          STAGE="out/mdview-${VERSION}-macos-${ARCH}"
+          mkdir -p "$STAGE"
+          cp target/release/mdview "$STAGE/"
+          cp README.md LICENSE "$STAGE/" 2>/dev/null || true
+          tar -C out -czf "$STAGE.tar.gz" "$(basename "$STAGE")"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdview-build-${{ runner.os }}
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine version
+        id: ver
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            V="${{ github.event.inputs.version }}"
+          elif [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            V="${GITHUB_REF_NAME#v}"
+          else
+            V="$(tr -d '[:space:]' < VERSION)"
+          fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
 
       - name: Generate checksums
         shell: bash
         run: |
-          sha256sum "mdview-${{ steps.ver.outputs.version }}-portable.zip" \
-                    "dist/mdview-setup-${{ steps.ver.outputs.version }}.exe" > sha256sums.txt
+          cd out
+          sha256sum * > ../sha256sums.txt
+          mv ../sha256sums.txt ./sha256sums.txt
+          echo "--- artifacts ---"
+          ls -la
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -81,11 +167,28 @@ jobs:
           tag_name: v${{ steps.ver.outputs.version }}
           name: mdview ${{ steps.ver.outputs.version }}
           files: |
-            mdview-${{ steps.ver.outputs.version }}-portable.zip
-            dist/mdview-setup-${{ steps.ver.outputs.version }}.exe
-            sha256sums.txt
+            out/mdview-*-windows-portable.zip
+            out/mdview-setup-*.exe
+            out/mdview-*-linux-*.tar.gz
+            out/mdview-*-macos-*.tar.gz
+            out/sha256sums.txt
           body: |
             mdview ${{ steps.ver.outputs.version }}
 
-            - `mdview-*-portable.zip` — portable build, unzip and run
-            - `mdview-setup-*.exe` — Windows installer
+            ## Downloads
+
+            | Platform | File |
+            |----------|------|
+            | Windows (portable) | `mdview-${{ steps.ver.outputs.version }}-windows-portable.zip` |
+            | Windows (installer) | `mdview-setup-${{ steps.ver.outputs.version }}.exe` |
+            | Linux (x86_64) | `mdview-${{ steps.ver.outputs.version }}-linux-x86_64.tar.gz` |
+            | macOS (Apple Silicon / Intel) | `mdview-${{ steps.ver.outputs.version }}-macos-*.tar.gz` |
+
+            ## Install
+
+            - **Windows**: unzip the portable zip and run `mdview.exe`, or use the installer.
+            - **Linux**: extract the tarball and run `./install-linux-mime.sh` to register `.md` association.
+              Requires `libwebkit2gtk-4.1-0` and `libgtk-3-0` (installed by default on most desktop distros).
+            - **macOS**: extract the tarball and run `./mdview`.
+
+            See `sha256sums.txt` for checksums of all assets.
