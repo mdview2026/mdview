@@ -5,7 +5,7 @@
 <h1 align="center">mdview</h1>
 
 <p align="center">
-  <strong>The 1.9 MB Markdown app — double-click any .md file to read it like a webpage, press F2 to edit in place.</strong><br>
+  <strong>Markdown, without the baggage.</strong> A 2.0 MB viewer, not another 200 MB editor — double-click any .md file to read it like a webpage, press F2 to edit in place.<br>
   Windows · macOS · Android &nbsp;|&nbsp; Built with Rust + WebView2, no Electron
 </p>
 
@@ -13,15 +13,25 @@
   <a href="https://www.mdview.top/">Website</a> ·
   <a href="https://github.com/mdview2026/mdview/releases/latest">Download</a> ·
   <a href="https://www.mdview.top/changelog.html">Changelog</a> ·
-  <a href="https://www.mdview.top/blog/">Blog</a>
+  <a href="https://www.mdview.top/blog/">Blog</a> ·
+  <a href="docs/facts.md">Docs</a>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.es.md">Español</a> ·
+  <a href="README.fr.md">Français</a>
 </p>
 
 ---
 
 Most of the time you open a `.md` file, you just want to **read** it — a README, some notes, an AI-generated answer. Booting a full editor for that is overkill. mdview opens it instantly like a webpage, and when you do need to edit, `F2` gives you Obsidian-style WYSIWYG right inside the same window — no mode switch to another app.
 
-- **1.9 MB installer**, opens in under a second, zero configuration
-- **Read *and* edit** — clean full-page reading; `F2` WYSIWYG edit, `F3` dual-column with live preview
+- **Tiny app.** 2.0 MB installer, opens in under a second, zero configuration
+- **Zero clutter.** Clean full-page reading — no toolbars, no sidebars you didn't ask for
+- **Edit in place.** `F2` Obsidian-style WYSIWYG, `F3` dual-column with live preview
 - **100% local** — no account, no ads, your files never leave your computer
 
 <p align="center">
@@ -32,13 +42,28 @@ Most of the time you open a `.md` file, you just want to **read** it — a READM
 
 | Platform | Community (free forever) | Pro ($6.99 lifetime) |
 |---|---|---|
-| Windows 10/11 | [mdview-setup-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-latest.exe) | [mdview-setup-pro-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-pro-latest.exe) |
-| macOS 11+ | [mdview-macos-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-latest.dmg) | [mdview-macos-pro-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-pro-latest.dmg) |
+| Windows 10/11 | [mdview-setup-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-en-latest.exe) | [mdview-setup-pro-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-pro-en-latest.exe) |
+| macOS 11+ | [mdview-macos-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-en-latest.dmg) | [mdview-macos-pro-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-pro-en-latest.dmg) |
 | Android 7.0+ | [mdview.apk](https://www.mdview.top/download/mdview.apk) | — |
 
 Both editions are the same product and overwrite each other on install — switch anytime. Android is Community only.
 
+> **In mainland China?** Use the domestic edition instead — same app, distributed by [www.mdview.cn](https://www.mdview.cn/) with WeChat Pay (¥5 Pro lifetime unlock): [download page](https://www.mdview.cn/download.html).
+
 > **SmartScreen warning?** Windows flags apps without an expensive code-signing certificate. Click **More info → Run anyway**. mdview runs entirely locally and uploads nothing.
+
+## Why mdview
+
+You double-click a `.md` file to read it — not to boot an IDE. Think **Quick Look for Markdown**:
+
+| | mdview | Typora / VS Code | Browser extension |
+|---|---|---|---|
+| Install size | **2.0 MB** | 100–400 MB | — (but needs a browser) |
+| Double-click a .md file | **Instant** | 3–5 s of editor startup | Drag or copy-paste each time |
+| Reading-first UI | **Zero chrome** | Toolbars, panels, tabs | Browser UI around it |
+| Built for | **Reading** | Writing code / docs | Occasional preview |
+
+They complement each other — keep your editor for writing, use mdview for the 90% of times you just read.
 
 ## Features
 
@@ -171,6 +196,38 @@ mdview --help              # help
 | `MD_HTML=1` | Also output a rendered `.html` next to the `.md` file |
 | `MD_HTML_OUTPUT=<path>` | Output the `.html` to a specific path |
 | `MD_EDITOR` | Editor command for `F4` (e.g. `code --goto "{file}:{line}"`); auto-detected if unset |
+
+## FAQ
+
+<details>
+<summary><strong>How do I open .md files on Windows?</strong></summary>
+
+Install mdview once and it associates `.md` files for you. From then on, double-click any Markdown file and it opens rendered like a webpage — no editor, no browser extension, no configuration.
+</details>
+
+<details>
+<summary><strong>Is mdview free?</strong></summary>
+
+Yes. The Community Edition is free forever with the full reading experience. The Pro Edition adds Mermaid diagrams, KaTeX math and two editing modes (F2 Live Edit, F3 dual-column) for a one-time $6.99 lifetime unlock — with 100 free trial opens first, and a dismissible "Maybe Later" prompt after that. It never hard-locks.
+</details>
+
+<details>
+<summary><strong>How is it different from Typora or VS Code?</strong></summary>
+
+Typora and VS Code are editors — powerful, but heavy when you only want to read. mdview is a dedicated viewer: a 2.0 MB installer that opens in under a second and closes with `Esc`. Think Quick Look for Markdown. They complement each other.
+</details>
+
+<details>
+<summary><strong>Does mdview upload my files?</strong></summary>
+
+No. mdview runs 100% locally. It only starts a temporary server on `localhost` to render the page — your Markdown never leaves your computer. No account, no ads, no tracking.
+</details>
+
+<details>
+<summary><strong>What are the system requirements?</strong></summary>
+
+Windows 10/11 with the WebView2 runtime (preinstalled on Windows 11 and most Windows 10 PCs) · macOS 11 Big Sur or later · Android 7.0 or later.
+</details>
 
 ## Tech stack
 
