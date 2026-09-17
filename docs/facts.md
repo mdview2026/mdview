@@ -38,7 +38,7 @@ Exact byte sizes are published with every release: open a release's asset list o
 
 | | Community | Pro |
 |---|---|---|
-| Price | **free forever** | **$6.99 one-time lifetime** (Gumroad: card / PayPal) · domestic edition ¥5 (WeChat Pay) |
+| Price | **free forever** | **$9.99 one-time lifetime** (Gumroad: card / PayPal) · domestic edition ¥5 (WeChat Pay) |
 | All reading features | ✅ | ✅ |
 | Mermaid diagrams + KaTeX math | — | ✅ |
 | Live Edit `F2` + dual-column edit `F3` | — | ✅ |

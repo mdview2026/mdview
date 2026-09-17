@@ -25,7 +25,7 @@
   <a href="README.fr.md">Français</a>
 </p>
 
-> 本页为**国内版**介绍——微信支付,Pro ¥5 永久解锁,下载与更新均由 mdview.cn 本站提供。海外用户请看 [英文版](README.md)(国际版官网 [www.mdview.top](https://www.mdview.top/),GitHub Releases 下载,Pro $6.99)。
+> 本页为**国内版**介绍——微信支付,Pro ¥5 永久解锁,下载与更新均由 mdview.cn 本站提供。海外用户请看 [英文版](README.md)(国际版官网 [www.mdview.top](https://www.mdview.top/),GitHub Releases 下载,Pro $9.99)。
 
 ---
 
@@ -234,7 +234,7 @@ Windows 10/11(需要 WebView2 运行时,Windows 11 和多数 Windows 10 电脑�
 <details>
 <summary><strong>国内版和国际版有什么区别?</strong></summary>
 
-同一产品、同一功能,区别只在分发与支付:国内版由 [mdview.cn](https://www.mdview.cn/) 提供下载与更新,Pro 走微信支付 ¥5;国际版由 [mdview.top](https://www.mdview.top/) 提供,下载托管在 GitHub Releases,Pro 走 Gumroad $6.99。两版安装包互相覆盖,数据共用。
+同一产品、同一功能,区别只在分发与支付:国内版由 [mdview.cn](https://www.mdview.cn/) 提供下载与更新,Pro 走微信支付 ¥5;国际版由 [mdview.top](https://www.mdview.top/) 提供,下载托管在 GitHub Releases,Pro 走 Gumroad $9.99。两版安装包互相覆盖,数据共用。
 </details>
 
 ## 技术栈
@@ -245,3 +245,7 @@ Windows 10/11(需要 WebView2 运行时,Windows 11 和多数 Windows 10 电脑�
 - **Markdown**:内嵌 md4c
 - **文件监听**:notify + SSE 实时刷新
 - **样式**:Tailwind CSS
+
+## 联系方式
+
+问题反馈、Bug 报告、授权与购买咨询:**mdview@ml-smarttech.com**

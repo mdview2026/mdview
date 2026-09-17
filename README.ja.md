@@ -40,7 +40,7 @@
 
 ## ダウンロード
 
-| プラットフォーム | Community(永久無料)| Pro($6.99 買い切り)|
+| プラットフォーム | Community(永久無料)| Pro($9.99 買い切り)|
 |---|---|---|
 | Windows 10/11 | [mdview-setup-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-en-latest.exe) | [mdview-setup-pro-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-pro-en-latest.exe) |
 | macOS 11+ | [mdview-macos-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-en-latest.dmg) | [mdview-macos-pro-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-pro-en-latest.dmg) |
@@ -162,7 +162,7 @@
 
 | | Community | Pro |
 |---|---|---|
-| 価格 | **永久無料**(任意でスポンサー)| **$6.99** 一回限りの買い切り(Gumroad:カード / PayPal) |
+| 価格 | **永久無料**(任意でスポンサー)| **$9.99** 一回限りの買い切り(Gumroad:カード / PayPal) |
 | コアな読書機能 | ✅ すべて | ✅ すべて |
 | Mermaid + KaTeX | — | ✅ |
 | ライブ編集(F2)+ 2 段組編集(F3) | — | ✅ |
@@ -206,7 +206,7 @@ mdview を一度インストールすれば、`.md` ファイルが自動的に�
 <details>
 <summary><strong>mdview は無料ですか?</strong></summary>
 
-はい。Community エディションは完全な読書体験を含めて永久無料です。Pro エディションは Mermaid ダイアグラム、KaTeX 数式、2 つの編集モード(F2 ライブ編集、F3 2 段組)を $6.99 の買い切りで追加します——まず 100 回の無料体験があり、その後も閉じられる「後で」プロンプトが表示されるだけで、ロックされることはありません。
+はい。Community エディションは完全な読書体験を含めて永久無料です。Pro エディションは Mermaid ダイアグラム、KaTeX 数式、2 つの編集モード(F2 ライブ編集、F3 2 段組)を $9.99 の買い切りで追加します——まず 100 回の無料体験があり、その後も閉じられる「後で」プロンプトが表示されるだけで、ロックされることはありません。
 </details>
 
 <details>
@@ -235,3 +235,7 @@ Windows 10/11(WebView2 ランタイム。Windows 11 とほとんどの Windows 1
 - **Markdown**: 組み込み md4c
 - **ファイル監視**: notify + SSE ライブリロード
 - **スタイリング**: Tailwind CSS
+
+## お問い合わせ
+
+ご質問、不具合の報告、ライセンスや購入についてなど:**mdview@ml-smarttech.com**

@@ -40,7 +40,7 @@ Most of the time you open a `.md` file, you just want to **read** it — a READM
 
 ## Download
 
-| Platform | Community (free forever) | Pro ($6.99 lifetime) |
+| Platform | Community (free forever) | Pro ($9.99 lifetime) |
 |---|---|---|
 | Windows 10/11 | [mdview-setup-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-en-latest.exe) | [mdview-setup-pro-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-pro-en-latest.exe) |
 | macOS 11+ | [mdview-macos-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-en-latest.dmg) | [mdview-macos-pro-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-pro-en-latest.dmg) |
@@ -164,7 +164,7 @@ They complement each other — keep your editor for writing, use mdview for the 
 
 | | Community | Pro |
 |---|---|---|
-| Price | **Free forever** (optional sponsorship) | **$6.99** one-time lifetime unlock (Gumroad: card / PayPal) |
+| Price | **Free forever** (optional sponsorship) | **$9.99** one-time lifetime unlock (Gumroad: card / PayPal) |
 | Core reading features | ✅ everything | ✅ everything |
 | Mermaid + KaTeX | — | ✅ |
 | Live Edit (F2) + Dual-column edit (F3) | — | ✅ |
@@ -208,7 +208,7 @@ Install mdview once and it associates `.md` files for you. From then on, double-
 <details>
 <summary><strong>Is mdview free?</strong></summary>
 
-Yes. The Community Edition is free forever with the full reading experience. The Pro Edition adds Mermaid diagrams, KaTeX math and two editing modes (F2 Live Edit, F3 dual-column) for a one-time $6.99 lifetime unlock — with 100 free trial opens first, and a dismissible "Maybe Later" prompt after that. It never hard-locks.
+Yes. The Community Edition is free forever with the full reading experience. The Pro Edition adds Mermaid diagrams, KaTeX math and two editing modes (F2 Live Edit, F3 dual-column) for a one-time $9.99 lifetime unlock — with 100 free trial opens first, and a dismissible "Maybe Later" prompt after that. It never hard-locks.
 </details>
 
 <details>
@@ -237,3 +237,7 @@ Windows 10/11 with the WebView2 runtime (preinstalled on Windows 11 and most Win
 - **Markdown**: embedded md4c
 - **File watching**: notify + SSE live reload
 - **Styling**: Tailwind CSS
+
+## Contact
+
+Questions, bug reports, licensing or anything else: **mdview@ml-smarttech.com**

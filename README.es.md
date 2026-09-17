@@ -40,7 +40,7 @@ La mayoría de las veces que abres un archivo `.md`, solo quieres **leerlo** —
 
 ## Descargar
 
-| Plataforma | Community (gratis para siempre) | Pro ($6.99 de por vida) |
+| Plataforma | Community (gratis para siempre) | Pro ($9.99 de por vida) |
 |---|---|---|
 | Windows 10/11 | [mdview-setup-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-en-latest.exe) | [mdview-setup-pro-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-pro-en-latest.exe) |
 | macOS 11+ | [mdview-macos-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-en-latest.dmg) | [mdview-macos-pro-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-pro-en-latest.dmg) |
@@ -162,7 +162,7 @@ Se complementan — mantén tu editor para escribir y usa mdview para el 90% de 
 
 | | Community | Pro |
 |---|---|---|
-| Precio | **Gratis para siempre** (patrocinio opcional) | **$6.99** desbloqueo único de por vida (Gumroad: tarjeta / PayPal) |
+| Precio | **Gratis para siempre** (patrocinio opcional) | **$9.99** desbloqueo único de por vida (Gumroad: tarjeta / PayPal) |
 | Funciones de lectura básicas | ✅ todo | ✅ todo |
 | Mermaid + KaTeX | — | ✅ |
 | Edición en vivo (F2) + doble columna (F3) | — | ✅ |
@@ -206,7 +206,7 @@ Instala mdview una vez y asociará los archivos `.md` por ti. A partir de entonc
 <details>
 <summary><strong>¿Es gratis mdview?</strong></summary>
 
-Sí. La edición Community es gratis para siempre con la experiencia de lectura completa. La edición Pro añade diagramas Mermaid, matemáticas KaTeX y dos modos de edición (F2 en vivo, F3 doble columna) por un único pago de $6.99 de por vida — primero tienes 100 aperturas de prueba gratis y después solo un aviso descartable de "Quizá más tarde". Nunca se bloquea.
+Sí. La edición Community es gratis para siempre con la experiencia de lectura completa. La edición Pro añade diagramas Mermaid, matemáticas KaTeX y dos modos de edición (F2 en vivo, F3 doble columna) por un único pago de $9.99 de por vida — primero tienes 100 aperturas de prueba gratis y después solo un aviso descartable de "Quizá más tarde". Nunca se bloquea.
 </details>
 
 <details>
@@ -235,3 +235,7 @@ Windows 10/11 con el runtime WebView2 (preinstalado en Windows 11 y en la mayor�
 - **Markdown**: md4c embebido
 - **Vigilancia de archivos**: notify + recarga en vivo SSE
 - **Estilos**: Tailwind CSS
+
+## Contacto
+
+Dudas, informes de errores, licencias o cualquier otra consulta: **mdview@ml-smarttech.com**

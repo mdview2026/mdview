@@ -40,7 +40,7 @@ La plupart du temps, quand vous ouvrez un fichier `.md`, vous voulez juste le **
 
 ## Téléchargement
 
-| Plateforme | Community (gratuit à vie) | Pro (6,99 $ à vie) |
+| Plateforme | Community (gratuit à vie) | Pro (9,99 $ à vie) |
 |---|---|---|
 | Windows 10/11 | [mdview-setup-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-en-latest.exe) | [mdview-setup-pro-en-latest.exe](https://github.com/mdview2026/mdview/releases/latest/download/mdview-setup-pro-en-latest.exe) |
 | macOS 11+ | [mdview-macos-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-en-latest.dmg) | [mdview-macos-pro-en-latest.dmg](https://github.com/mdview2026/mdview/releases/latest/download/mdview-macos-pro-en-latest.dmg) |
@@ -162,7 +162,7 @@ Ils se complètent — gardez votre éditeur pour écrire, et utilisez mdview po
 
 | | Community | Pro |
 |---|---|---|
-| Prix | **Gratuit à vie** (sponsoring optionnel) | **6,99 $** déblocage unique à vie (Gumroad : carte / PayPal) |
+| Prix | **Gratuit à vie** (sponsoring optionnel) | **9,99 $** déblocage unique à vie (Gumroad : carte / PayPal) |
 | Fonctions de lecture principales | ✅ tout | ✅ tout |
 | Mermaid + KaTeX | — | ✅ |
 | Édition en direct (F2) + double colonne (F3) | — | ✅ |
@@ -206,7 +206,7 @@ Installez mdview une fois et il associe les fichiers `.md` pour vous. Ensuite, d
 <details>
 <summary><strong>mdview est-il gratuit ?</strong></summary>
 
-Oui. L'édition Community est gratuite à vie avec l'expérience de lecture complète. L'édition Pro ajoute les diagrammes Mermaid, les maths KaTeX et deux modes d'édition (F2 en direct, F3 double colonne) pour 6,99 $ une seule fois à vie — avec d'abord 100 ouvertures d'essai gratuites, puis une simple invite « Peut-être plus tard » escamotable. Jamais de verrouillage forcé.
+Oui. L'édition Community est gratuite à vie avec l'expérience de lecture complète. L'édition Pro ajoute les diagrammes Mermaid, les maths KaTeX et deux modes d'édition (F2 en direct, F3 double colonne) pour 9,99 $ une seule fois à vie — avec d'abord 100 ouvertures d'essai gratuites, puis une simple invite « Peut-être plus tard » escamotable. Jamais de verrouillage forcé.
 </details>
 
 <details>
@@ -235,3 +235,7 @@ Windows 10/11 avec le runtime WebView2 (préinstallé sur Windows 11 et la plupa
 - **Markdown** : md4c embarqué
 - **Surveillance de fichiers** : notify + rechargement en direct SSE
 - **Styles** : Tailwind CSS
+
+## Contact
+
+Questions, rapports de bugs, licences ou toute autre demande : **mdview@ml-smarttech.com**
