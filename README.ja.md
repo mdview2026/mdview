@@ -28,6 +28,14 @@
 
 `.md` ファイルを開くとき、その大半はただ**読みたいだけ**——README、メモ、AI が生成した回答。そのためにフル機能のエディターを起動するのは大げさです。mdview ならウェブページのように一瞬で開き、編集が必要になったときは `F2` で同じウィンドウ内で Obsidian スタイルの WYSIWYG 編集ができます——他のアプリへ切り替える必要はありません。
 
+<p align="center">
+  <a href="https://youtu.be/3tiFsRD2RRI" title="mdview — Open Markdown files like a web page">
+    <img src="https://i.ytimg.com/vi/3tiFsRD2RRI/maxresdefault.jpg" alt="mdview デモ動画 — .md ファイルをダブルクリックするだけでウェブページのように読めます" width="640">
+  </a>
+</p>
+
+**その他のショートデモ:** [タブ切替](https://youtu.be/CkzQVBAAamc) · [Mermaid フルスクリーン](https://youtu.be/fTbM_msg9Q0) · [KaTeX 数式](https://youtu.be/eqD_Flb6f2s) · [検索とズーム](https://youtu.be/K94Vp3zFK1U) · [コードブロックとテーブル](https://youtu.be/vLYCcgMpoLw) · [ダークモードと9テーマ](https://youtu.be/RqUUiXgvsEo) · [85秒イントロ](https://youtu.be/t85oxBKi3AU) · [YouTube チャンネル](https://www.youtube.com/@mdview-d5x)
+
 - **超軽量。** 3 MB のインストーラー、1 秒未満で起動、設定不要
 - **タブプレビュー(2.0)。** すべてのドキュメントを 1 つのウィンドウに——`Ctrl+Tab` で切替、スクロール位置と編集状態はそのまま保持
 - **余計なものゼロ。** クリーンな全画面読書——ツールバーも、勝手に出るサイドバーもありません

@@ -28,6 +28,14 @@
 
 La plupart du temps, quand vous ouvrez un fichier `.md`, vous voulez juste le **lire** — un README, des notes, une réponse générée par une IA. Démarrer un éditeur complet pour ça, c'est utiliser un marteau-pilon pour écraser une mouche. mdview l'ouvre instantanément comme une page web, et quand vous avez vraiment besoin d'éditer, `F2` vous offre du WYSIWYG façon Obsidian dans la même fenêtre — sans basculer vers une autre application.
 
+<p align="center">
+  <a href="https://youtu.be/3tiFsRD2RRI" title="mdview — Open Markdown files like a web page">
+    <img src="https://i.ytimg.com/vi/3tiFsRD2RRI/maxresdefault.jpg" alt="Vidéo de démonstration de mdview — double-cliquez sur un fichier .md et lisez-le comme une page web" width="640">
+  </a>
+</p>
+
+**Plus de démos courtes :** [Onglets et `Ctrl+Tab`](https://youtu.be/CkzQVBAAamc) · [Mermaid plein écran](https://youtu.be/fTbM_msg9Q0) · [Formules KaTeX](https://youtu.be/eqD_Flb6f2s) · [Recherche et zoom](https://youtu.be/K94Vp3zFK1U) · [Blocs de code et tableaux](https://youtu.be/vLYCcgMpoLw) · [Mode sombre et 9 thèmes](https://youtu.be/RqUUiXgvsEo) · [Intro de 85 s](https://youtu.be/t85oxBKi3AU) · [Chaîne YouTube](https://www.youtube.com/@mdview-d5x)
+
 - **Application minuscule.** Installateur de 3 Mo, ouverture en moins d'une seconde, zéro configuration
 - **Aperçu à onglets (2.0).** Tous vos documents dans une seule fenêtre — `Ctrl+Tab` pour basculer, défilement et état d'édition préservés
 - **Zéro encombrement.** Lecture pleine page et épurée — pas de barres d'outils, pas de panneaux que vous n'avez pas demandés

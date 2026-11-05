@@ -28,6 +28,14 @@
 
 La mayoría de las veces que abres un archivo `.md`, solo quieres **leerlo** — un README, unas notas, una respuesta generada por IA. Arrancar un editor completo para eso es matar moscas a cañonazos. mdview lo abre al instante como una página web, y cuando sí necesitas editar, `F2` te da WYSIWYG estilo Obsidian dentro de la misma ventana — sin cambiar a otra aplicación.
 
+<p align="center">
+  <a href="https://youtu.be/3tiFsRD2RRI" title="mdview — Open Markdown files like a web page">
+    <img src="https://i.ytimg.com/vi/3tiFsRD2RRI/maxresdefault.jpg" alt="Vídeo de demostración de mdview — doble clic en cualquier archivo .md y léelo como una página web" width="640">
+  </a>
+</p>
+
+**Más demos cortos:** [Pestañas y `Ctrl+Tab`](https://youtu.be/CkzQVBAAamc) · [Mermaid a pantalla completa](https://youtu.be/fTbM_msg9Q0) · [Fórmulas KaTeX](https://youtu.be/eqD_Flb6f2s) · [Búsqueda y zoom](https://youtu.be/K94Vp3zFK1U) · [Bloques de código y tablas](https://youtu.be/vLYCcgMpoLw) · [Modo oscuro y 9 temas](https://youtu.be/RqUUiXgvsEo) · [Introducción de 85 s](https://youtu.be/t85oxBKi3AU) · [Canal de YouTube](https://www.youtube.com/@mdview-d5x)
+
 - **App diminuta.** Instalador de 3 MB, abre en menos de un segundo, cero configuración
 - **Vista previa con pestañas (2.0).** Todos los documentos en una sola ventana — `Ctrl+Tab` para cambiar, con el desplazamiento y el estado de edición conservados
 - **Cero ruido.** Lectura limpia a página completa — sin barras de herramientas ni paneles que no pediste
